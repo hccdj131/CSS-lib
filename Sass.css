@@ -1,0 +1,148 @@
+[Sass]常见的编译错误
+而最为常见的一个错误就是字符编译引起的。在Sass的编译的过程中，是不是支持“GBK”编码的。所以在创建 Sass 文件时，
+需要将文件编码设置为“utf-8”。
+
+嵌套输出方式 nested
+
+nav {
+  ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  li { display: inline-block; }
+
+  a {
+    display: block;
+    padding: 6px 12px;
+    text-decoration: none;
+  }
+}
+
+编译出来的 CSS 样式风格：
+nav ul {
+  margin: 0;
+  padding: 0;
+  list-style: none; }
+nav li {
+  display: inline-block; }
+nav a {
+  display: block;
+  padding: 6px 12px;
+  text-decoration: none; }
+
+展开输出CSS 样式风格和 nested 类似，只是大括号在另起一行
+
+sass 的默认变量一般是用来设置默认值，然后根据需求来覆盖的，覆盖的方式也很简单，
+只需要在默认变量之前重新声明下变量即可。
+
+全局变量就是定义在元素外面的变量
+局部变量就成为了全局变量的影子。基本上，局部变量只会在局部范围内覆盖全局变量。
+
+选择器嵌套为样式表的作者提供了一个通过局部选择器相互嵌套实现全局选择的方法，Sass 的嵌套分为三种：
+选择器嵌套
+属性嵌套
+伪类嵌套
+
+其实伪类嵌套和属性嵌套非常类似，只不过他需要借助`&`符号一起配合使用。我们就拿经典的“clearfix”为例吧：
+.clearfix{
+&:before,
+&:after {
+    content:"";
+    display: table;
+  }
+&:after {
+    clear:both;
+    overflow: hidden;
+  }
+}
+编译出来的 CSS：
+clearfix:before, .clearfix:after {
+  content: "";
+  display: table;
+}
+.clearfix:after {
+  clear: both;
+  overflow: hidden;
+}
+避免选择器嵌套：
+选择器嵌套最大的问题是将使最终的代码难以阅读。开发者需要花费巨大精力计算不同缩进级别下的选择器具体的表现效果。
+选择器越具体则声明语句越冗长，而且对最近选择器的引用(&)也越频繁。在某些时候，出现混淆选择器路径和探索下一级选择器的错误率很高，这非常不值得。
+为了防止此类情况，我们应该尽可能避免选择器嵌套。然而，显然只有少数情况适应这一措施。
+
+声明混合宏
+不带参数混合宏：
+在 Sass 中，使用“@mixin”来声明一个混合宏。如：
+@mixin border-radius{
+    -webkit-border-radius: 5px;
+    border-radius: 5px;
+}
+其中 @mixin 是用来声明混合宏的关键词，有点类似 CSS 中的 @media、@font-face 一样。border-radius 是混合宏的名称。大括号里面是复用的样式代码。
+带参数混合宏：
+除了声明一个不带参数的混合宏之外，还可以在定义混合宏时带有参数，如：
+@mixin border-radius($radius:5px){
+    -webkit-border-radius: $radius;
+    border-radius: $radius;
+}
+
+调用混合宏
+在 Sass 中通过 @mixin 关键词声明了一个混合宏，那么在实际调用中，其匹配了一个关键词“@include”来调用声明好的混合宏。例如在你的样式中定义了一个圆角的混合宏“border-radius”:
+@mixin border-radius{
+    -webkit-border-radius: 3px;
+    border-radius: 3px;
+}
+在一个按钮中要调用定义好的混合宏“border-radius”，可以这样使用：
+button {
+    @include border-radius;
+}
+这个时候编译出来的 CSS:
+button {
+  -webkit-border-radius: 3px;
+  border-radius: 3px;
+}
+
+
+扩展/继承
+在 Sass 中也具有继承一说，也是继承类中的样式代码块。在 Sass 中是通过关键词 “@extend”来继承已存在的类样式块，从而实现代码的继承。如下所示：
+//SCSS
+.btn {
+  border: 1px solid #ccc;
+  padding: 6px 10px;
+  font-size: 14px;
+}
+
+.btn-primary {
+  background-color: #f36;
+  color: #fff;
+  @extend .btn;
+}
+
+.btn-second {
+  background-color: orange;
+  color: #fff;
+  @extend .btn;
+}
+编译出来之后：
+//CSS
+.btn, .btn-primary, .btn-second {
+  border: 1px solid #ccc;
+  padding: 6px 10px;
+  font-size: 14px;
+}
+
+.btn-primary {
+  background-color: #f36;
+  color: #fff;
+}
+
+.btn-second {
+  background-clor: orange;
+  color: #fff;
+}
+从示例代码可以看出，在 Sass 中的继承，可以继承类样式块中所有样式代码，而且编译出来的 CSS 会将选择器合并在一起，形成组合选择器：
+.btn, .btn-primary, .btn-second {
+  border: 1px solid #ccc;
+  padding: 6px 10px;
+  font-size: 14px;
+}
