@@ -1,0 +1,19 @@
+ul, li {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+}
+
+li {
+    display: inline-block;
+    border: 1px solid #000;
+}
+
+display:inline-block
+inline-block结合了inline和block两者的特性于一身
+
+简单的说：设置了inline-block属性的元素既拥有了block元素可以设置width和height的特性，
+又保持了inline元素不换行的特性。
+
+举例说明：以前我们做横向菜单列表的时候，我们可以通过li和float:left两者来实现，
+现在可以通过li和display:inline-block。
